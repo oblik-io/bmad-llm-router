@@ -1,0 +1,59 @@
+---
+### 📋 `.bmad-core/config/router.config.yml`
+```yaml
+# Файл конфігурації для інтелектуального роутера BMAD.
+# Визначає доступні моделі та правила їх вибору.
+# Цей файл версіонується в Git і є спільним для всієї команди.
+
+version: 1
+
+# Список доступних моделей з їх характеристиками
+models:
+  - id: 'openai-gpt4o'
+    provider: 'OpenAI'
+    name: 'gpt-4o'
+    # Умовна вартість (наприклад, за 1М токенів) для порівняння
+    cost_index: 15 
+    # Можливості моделі для прийняття рішень
+    capabilities: ['reasoning', 'coding', 'vision', 'fast']
+
+  - id: 'anthropic-claude3-sonnet'
+    provider: 'Anthropic'
+    name: 'claude-3-sonnet'
+    cost_index: 3
+    capabilities: ['coding', 'fast', 'large_context']
+
+  - id: 'gemini-1.5-flash'
+    provider: 'Google'
+    name: 'gemini-1.5-flash-latest'
+    cost_index: 1 
+    capabilities: ['fast', 'large_context', 'vision']
+
+  - id: 'local-llama3'
+    provider: 'Ollama'
+    name: 'llama3:8b'
+    cost_index: 0
+    capabilities: ['coding', 'ultra_fast', 'local']
+
+# Стратегії маршрутизації
+strategies:
+  # Стратегія за замовчуванням
+  - name: 'balanced' 
+    rules:
+      - if_capability: 'reasoning'
+        use_model: 'openai-gpt4o'
+      - if_capability: 'coding'
+        use_model: 'anthropic-claude3-sonnet'
+      - default: 'gemini-1.5-flash'
+
+  # Стратегія максимальної якості
+  - name: 'max_quality'
+    rules:
+      - default: 'openai-gpt4o'
+
+  # Стратегія максимальної економії
+  - name: 'max_savings'
+    rules:
+      - if_capability: 'local'
+        use_model: 'local-llama3'
+      - default: 'gemini-1.5-flash'
