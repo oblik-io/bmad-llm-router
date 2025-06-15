@@ -1,55 +1,48 @@
-Брифінг-документ: Оптимізація використання Claude Code шляхом ручного вибору моделі [GoogleGem](https://gemini.google.com/gem/4ae88680b137/586b01e5f6b1c11b)
-Основні теми та найважливіші ідеї:
-Цей документ розглядає ключові аспекти використання Claude Code, зосереджуючись на його поведінці за замовчуванням у виборі моделі та стратегіях для оптимізації витрат та ефективності.
-1. Недоліки стандартних налаштувань Claude Code:
-•
-Відсутність інтелектуального вибору моделі за замовчуванням: Claude Code завжди направляє запити через свою найпотужнішу та найдорожчу модель – Opus 4. Як зазначається, "за замовчуванням Claude code завжди маршрутизує ваш запит через найпотужнішу модель Anthropic Opus 4". Це відбувається незалежно від складності запиту.
-•
-Висока вартість Opus 4: Opus 4 в п'ять разів дорожча за Sonnet 4. "Opus 4 is five times more costly than Sonnet 4". Це призводить до значного перевитрати токенів та швидкого досягнення лімітів використання.
-•
-Реактивне перемикання моделі: Claude Code перемикається на Sonnet 4 лише тоді, коли "ваше використання наближається до 20% вашої виділеної квоти". Це перемикання не є стратегічним, а лише реактивним, коли користувач "running out of capacity". Цей поріг перемикання змінювався (від 100% до 50%, а потім до 20%), що свідчить про спроби Anthropic знайти баланс.
-•
-Порівняння з іншими інструментами: На відміну від Claude Code, "інші інструменти, такі як Cursor, пропонують інтелектуальне перемикання моделей за замовчуванням", оптимізуючи продуктивність і вартість.
-2. Демонстрація неефективності стандартних налаштувань:
-•
-Проведений експеримент з простим запитом "що таке 1 + 1" показав значну різницю у вартості:
-◦
-Використання Opus 4 (за замовчуванням): 25 центів.
-◦
-Використання Sonnet 4 (ручний вибір): 5 центів.
-•
-Ключовий висновок: "немає доданої цінності у використанні Opus 4 для такого типу завдання. Відповідь однакова, а складність мінімальна". Це підкреслює, що "Opus 4 run is about five times more expensive than a Sonet 4 run", але не надає кращих результатів для простих завдань.
-3. Важливість ручного вибору моделі:
-•
-Оптимізація витрат: Ручний вибір моделі дозволяє "отримати більше від вашого використання" та "уникнути марної трати токенів".
-•
-Відповідність моделі завданню: Це дозволяє використовувати "правильний рівень продуктивності для вашого завдання, не спалюючи токени без необхідності".
-4. Як ефективно обирати модель:
-•
-Загальне правило:
-◦
-Opus 4: Використовуйте для завдань, що вимагають "міркування, вирішення проблем або всього, що змусить вас зупинитися і подумати". Приклади: складний дизайн алгоритмів, налагодження складних проблем трасування, архітектурне планування, оптимізація коду, значний рефакторинг.
-◦
-Sonnet 4 (або старіші моделі): Використовуйте для більш "процедурних" завдань, де моделі потрібно просто "дотримуватися чітких вказівок". Приклади: проста реалізація, генерація коду за чітким планом, написання документації та коментарів, виправлення незначних синтаксичних та форматування помилок.
-•
-Парадоксальний ефект потужних моделей: "Іронічно, використання більш потужної моделі не завжди означає кращі результати". Для простих завдань Opus 4 може "переаналізувати запит", шукаючи глибину, якої немає, що може призвести до "занадто складних, надмірно абстрактних або навіть просто неправильних рішень". Легша модель, така як Sonnet 4, "дасть вам чистіші, пряміші відповіді".
-5. Поширені занепокоєння та стратегії їх вирішення:
-•
-"Це додає зайвий крок до мого робочого процесу": Це компроміс: "ви обмінюєте трохи свого часу, щоб заощадити значну кількість токенів". Якщо ви часто досягаєте лімітів, ручний вибір варто того.
-•
-"Sonnet 4 не розуміє мою кодову базу так добре, як Opus 4": Хоча Opus 4 краще справляється зі складною логікою та великими кодовими базами, Sonnet 4 все ще ефективна за допомогою кількох стратегій:
-◦
-Режим мислення (Thinking mode): Спонукайте Sonnet 4 до "режиму мислення", буквально набираючи "think hard" у запиті. Це спонукає модель "продумувати проблему ретельніше".
-◦
-Більш точне керівництво моделі: Будьте конкретними у своїх запитах. Вказуйте файли/функції для фокусування, надавайте приклади для наслідування. Структуруйте запити навколо "однієї чітко визначеної та незалежної частини кодової бази".
-◦
-Гібридний підхід: Opus 4 для планування, Sonnet 4 для виконання: * Планування з Opus 4: Використовуйте Opus 4 для складних міркувань, наприклад, розуміння кодової бази, проектування архітектури системи, створення плану реалізації, розробки стратегії тестування, визначення граничних випадків та складання списку завдань. * Виконання з Sonnet 4: Для кожного пункту плану, перейдіть до нового чату з Sonnet 4, скопіюйте відповідний контекст (план реалізації, системний дизайн, конкретне завдання) і використовуйте Sonnet 4 для виконання цієї частини роботи. Після завершення очистіть контекст і повторіть для наступного завдання. Цей підхід "дає вам найкраще з обох світів".
-Ключові висновки:
-•
-Поточна поведінка Claude Code за замовчуванням призводить до значних і непотрібних витрат токенів через постійне використання дорогої моделі Opus 4, навіть для простих завдань.
-•
-Anthropic, ймовірно, впровадить більш інтелектуальну систему вибору моделі в майбутньому, але наразі ця функція відсутня.
-•
-Активний ручний вибір моделі (Opus 4 для складних міркувань, Sonnet 4 для процедурних завдань) є найкращим способом оптимізувати робочий процес, заощадити кошти та отримати максимальну віддачу від Claude Code.
-•
-Навіть для складних завдань Sonnet 4 можна використовувати ефективно за допомогою стратегій, таких як режим мислення, більш точні інструкції та гібридний підхід з Opus 4 для планування.
+# Briefing Document: Optimizing Claude Code Usage Through Manual Model Selection
+
+**Main Topics and Key Ideas:**
+
+This document examines the key aspects of using Claude Code, focusing on its default model selection behavior and strategies for optimizing cost and efficiency.
+
+**1. Drawbacks of Claude Code's Default Settings:**
+
+* **Lack of intelligent model selection by default:** Claude Code always directs requests through its most powerful and expensive model—Opus 4. As noted, "by default, Claude code always routes your request through Anthropic's most powerful model, Opus 4." This occurs regardless of the request's complexity.
+* **High cost of Opus 4:** Opus 4 is five times more expensive than Sonnet 4. "Opus 4 is five times more costly than Sonnet 4." This leads to significant token overspending and reaching usage limits quickly.
+* **Reactive model switching:** Claude Code only switches to Sonnet 4 when "your usage approaches 20% of your allocated quota." This switch is not strategic but merely reactive, occurring when the user is "running out of capacity." This switching threshold has changed (from 100% to 50%, and then to 20%), indicating Anthropic's attempts to find a balance.
+* **Comparison with other tools:** Unlike Claude Code, "other tools, such as Cursor, offer intelligent model switching by default," optimizing performance and cost.
+
+**2. Demonstration of Default Settings' Inefficiency:**
+
+* An experiment conducted with a simple query "what is 1 + 1" showed a significant cost difference:
+    * Using Opus 4 (default): 25 cents.
+    * Using Sonnet 4 (manual selection): 5 cents.
+* **Key takeaway:** "there is no added value in using Opus 4 for this type of task. The answer is the same, and the complexity is minimal." This highlights that an "Opus 4 run is about five times more expensive than a Sonnet 4 run" but does not provide better results for simple tasks.
+
+**3. Importance of Manual Model Selection:**
+
+* **Cost optimization:** Manual model selection allows you to "get more from your usage" and "avoid wasting tokens."
+* **Matching the model to the task:** It allows you to use the "right level of performance for your task without burning tokens unnecessarily."
+
+**4. How to Choose a Model Effectively:**
+
+* **General rule:**
+    * **Opus 4:** Use for tasks requiring "reasoning, problem-solving, or anything that would make you stop and think." Examples: complex algorithm design, debugging difficult trace issues, architectural planning, code optimization, significant refactoring.
+    * **Sonnet 4 (or older models):** Use for more "procedural" tasks where the model just needs to "follow clear instructions." Examples: simple implementation, code generation from a clear plan, writing documentation and comments, fixing minor syntax and formatting errors.
+* **The paradoxical effect of powerful models:** "Ironically, using a more powerful model does not always mean better results." For simple tasks, Opus 4 might "over-analyze the request," looking for depth that isn't there, which can lead to "overly complex, overly abstract, or even just plain wrong solutions." A lighter model like Sonnet 4 "will give you cleaner, more direct answers."
+
+**5. Common Concerns and Strategies to Address Them:**
+
+* **"This adds an extra step to my workflow":** It's a trade-off: "you are trading a bit of your time to save a significant number of tokens." If you frequently hit your limits, manual selection is worth it.
+* **"Sonnet 4 doesn't understand my codebase as well as Opus 4":** While Opus 4 is better at handling complex logic and large codebases, Sonnet 4 can still be used effectively with a few strategies:
+    * **Thinking mode:** Prompt Sonnet 4 to enter "thinking mode" by literally typing "think hard" in the prompt. This encourages the model to "think through the problem more thoroughly."
+    * **More precise model guidance:** Be specific in your requests. Specify files/functions to focus on, and provide examples to follow. Structure requests around "one clearly defined and independent part of the codebase."
+    * **Hybrid approach: Opus 4 for planning, Sonnet 4 for execution:**
+        * **Planning with Opus 4:** Use Opus 4 for complex reasoning, such as understanding the codebase, designing system architecture, creating an implementation plan, developing a testing strategy, identifying edge cases, and compiling a task list.
+        * **Execution with Sonnet 4:** For each item in the plan, switch to a new chat with Sonnet 4, copy the relevant context (implementation plan, system design, specific task), and use Sonnet 4 to perform that part of the work. Once completed, clear the context and repeat for the next task. This approach "gives you the best of both worlds."
+
+**Key Conclusions:**
+
+* The current default behavior of Claude Code leads to significant and unnecessary token costs due to the constant use of the expensive Opus 4 model, even for simple tasks.
+* Anthropic will likely introduce a more intelligent model selection system in the future, but for now, this feature is absent.
+* Active manual model selection (Opus 4 for complex reasoning, Sonnet 4 for procedural tasks) is the best way to optimize workflow, save costs, and get the most out of Claude Code.
+* Even for complex tasks, Sonnet 4 can be used effectively through strategies like thinking mode, more precise instructions, and a hybrid approach with Opus 4 for planning.

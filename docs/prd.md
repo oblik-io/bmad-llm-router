@@ -1,72 +1,72 @@
-# PRD: Інтелектуальний маршрутизатор моделей BMAD (Версія 2.0)
+# PRD: BMAD Intelligent Model Router (Version 2.0)
 
-## 1. Цілі та контекст
+## 1. Goals and Context
 
-### Цілі (Розширені)
+### Goals (Expanded)
 
-* **Для користувача:** Радикально знизити вартість використання **будь-яких LLM-моделей (Antropic, Gemini, OpenAI, а також локальних, що працюють через Ollama чи подібні)**, шляхом автоматичного вибору найбільш економічно доцільної та продуктивної моделі для кожного конкретного запиту, зберігаючи при цьому високу якість результатів.
-* **Для продукту (BMAD-METHOD):** Створити універсальний, інтелектуальний LLM-шлюз, що стане центральним компонентом екосистеми BMAD. Це надасть користувачам унікальну гнучкість, контроль над витратами та можливість використовувати найкращі інструменти від різних провайдерів (включаючи локальні моделі для максимальної приватності та швидкості) для будь-якого завдання.
+* **For the user:** To radically reduce the cost of using **any LLM models (Anthropic, Gemini, OpenAI, as well as local ones running via Ollama or similar)** by automatically selecting the most cost-effective and productive model for each specific request, while maintaining high-quality results.
+* **For the product (BMAD-METHOD):** To create a universal, intelligent LLM gateway that will become a central component of the BMAD ecosystem. This will provide users with unique flexibility, cost control, and the ability to use the best tools from different providers (including local models for maximum privacy and speed) for any task.
 
-### Контекст
+### Context
 
-Початковий аналіз виявив неефективність використання однієї моделі для всіх завдань. Це розширення визнає, що проблема не обмежується одним провайдером. Сучасний ландшафт ШІ пропонує безліч моделей, кожна з яких має свої сильні сторони та вартість. Користувачі BMAD не повинні бути прив'язані до одного провайдера або вручну жонглювати різними інструментами. Цей PRD описує створення єдиної системи, яка абстрагує складність вибору та надає найкращий результат за найкращою ціною, незалежно від джерела моделі.
+The initial analysis revealed the inefficiency of using a single model for all tasks. This extension recognizes that the problem is not limited to one provider. The modern AI landscape offers a multitude of models, each with its own strengths and costs. BMAD users should not be tied to a single provider or have to manually juggle different tools. This PRD describes the creation of a unified system that abstracts away the complexity of choice and delivers the best result at the best price, regardless of the model's source.
 
-### Журнал змін
+### Change Log
 
-| Дата       | Версія | Опис                                                              | Автор |
-| :--------- | :----- | :---------------------------------------------------------------- | :---- |
-| 15.06.2025 | 1.0    | Початковий проєкт для бінарного роутера Claude                     | PM    |
-| **15.06.2025** | **2.0** | **Розширення до мульти-провайдерного LLM-шлюзу (OpenAI, Gemini, Ollama)** | **PM** |
+| Date | Version | Description | Author |
+| :--- | :--- | :--- | :--- |
+| 15.06.2025 | 1.0 | Initial draft for a binary Claude router | PM |
+| **15.06.2025** | **2.0** | **Expansion to a multi-provider LLM gateway (OpenAI, Gemini, Ollama)** | **PM** |
 
-## 2. Вимоги
+## 2. Requirements
 
-### Функціональні вимоги (FR)
+### Functional Requirements (FR)
 
-* **FR1: Аналіз складності запиту:** Система повинна автоматично аналізувати кожен запит користувача перед його відправленням, щоб визначити його намір та складність.
-* **FR2: Інтелектуальна маршрутизація (Мульти-модель):** На основі аналізу система повинна автоматично направляти запит до найкращої моделі з **усього пулу підключених провайдерів (Anthropic, OpenAI, Gemini, локальні)**, враховуючи їхні можливості, вартість та поточну завантаженість.
-* **FR3: Ручне керування (Розширене):** Користувач повинен мати можливість легко обрати **провайдера та конкретну модель** (наприклад, `OpenAI: GPT-4o`, `Local: Llama3`) для свого запиту.
-* **FR4: Прозорість і звітність:** Інтерфейс має чітко показувати, **який провайдер та яка модель** були використані.
-* **FR5: Автоматизований гібридний режим (Мульти-модель):** Система повинна дозволяти використовувати **найкращу модель для планування** (наприклад, `Claude 3 Opus` або `GPT-4o`) та **найкращу модель для виконання** (наприклад, `Gemini 1.5 Flash` або локальну `Llama3`) в рамках одного завдання.
-* **FR6: Налаштовувані стратегії:** Користувач може обрати одну з попередньо налаштованих стратегій.
-* **FR7: Підключення до API-провайдерів:** Система повинна підтримувати автентифікацію та відправку запитів до API Anthropic, OpenAI та Google (Gemini).
-* **FR8: Підключення до локальних моделей:** Система повинна підтримувати з'єднання з локальними серверами, що працюють за стандартом Ollama.
-* **FR9: Керування ключами та ендпоінтами:** Користувач повинен мати безпечний інтерфейс для введення своїх API-ключів для хмарних провайдерів та адреси ендпоінта для локального сервера.
-* **FR10: Конфігурована матриця моделей:** Система повинна використовувати конфігураційний файл, що описує можливості, відносну вартість та сильні сторони кожної моделі, щоб приймати рішення щодо маршрутизації.
+* **FR1: Request Complexity Analysis:** The system must automatically analyze each user request before sending it to determine its intent and complexity.
+* **FR2: Intelligent Routing (Multi-model):** Based on the analysis, the system must automatically route the request to the best model from the **entire pool of connected providers (Anthropic, OpenAI, Gemini, local)**, considering their capabilities, cost, and current load.
+* **FR3: Manual Control (Expanded):** The user must be able to easily select a **provider and a specific model** (e.g., `OpenAI: GPT-4o`, `Local: Llama3`) for their request.
+* **FR4: Transparency and Reporting:** The interface must clearly show **which provider and which model** were used.
+* **FR5: Automated Hybrid Mode (Multi-model):** The system should allow using the **best model for planning** (e.g., `Claude 3 Opus` or `GPT-4o`) and the **best model for execution** (e.g., `Gemini 1.5 Flash` or local `Llama3`) within a single task.
+* **FR6: Customizable Strategies:** The user can choose one of the pre-configured strategies.
+* **FR7: Connection to API Providers:** The system must support authentication and sending requests to the APIs of Anthropic, OpenAI, and Google (Gemini).
+* **FR8: Connection to Local Models:** The system must support connections to local servers operating on the Ollama standard.
+* **FR9: Key and Endpoint Management:** The user must have a secure interface for entering their API keys for cloud providers and the endpoint address for a local server.
+* **FR10: Configurable Model Matrix:** The system must use a configuration file that describes the capabilities, relative cost, and strengths of each model to make routing decisions.
 
-### Нефункціональні вимоги (NFR)
+### Non-Functional Requirements (NFR)
 
-* **NFR1: Продуктивність:** Затримка маршрутизації має бути мінімальною.
-* **NFR2: Надійність вибору:** Система повинна обирати оптимальну модель з усього пулу з високою надійністю.
-* **NFR3: Економія коштів:** Основна мета — значне зниження загальних витрат.
-* **NFR4: Інтеграція:** Глибока інтеграція в ядро BMAD-METHOD.
-* **NFR5: Розширюваність:** Архітектура повинна дозволяти легко додавати нових провайдерів або моделі в майбутньому, мінімально змінюючи код.
+* **NFR1: Performance:** Routing latency must be minimal.
+* **NFR2: Selection Reliability:** The system must select the optimal model from the entire pool with high reliability.
+* **NFR3: Cost Savings:** The primary goal is a significant reduction in overall costs.
+* **NFR4: Integration:** Deep integration into the BMAD-METHOD core.
+* **NFR5: Extensibility:** The architecture must allow for the easy addition of new providers or models in the future with minimal code changes.
 
-## 3. Епіки
+## 3. Epics
 
-### Епік 1: Ядро мульти-провайдерної інтеграції
+### Epic 1: Multi-Provider Integration Core
 
-**Мета:** Створити уніфікований шар для взаємодії з різними LLM-провайдерами та налаштування їх підключення.
+**Goal:** To create a unified layer for interacting with various LLM providers and configuring their connections.
 
-* **Історія 1.1:** Створити UI для безпечного введення та зберігання API-ключів для OpenAI, Anthropic, Gemini та URL для Ollama.
-* **Історія 1.2:** Реалізувати уніфікований адаптер, що може відправляти запити та отримувати відповіді від API OpenAI.
-* **Історія 1.3:** Розширити адаптер для підтримки API Anthropic.
-* **Історія 1.4:** Розширити адаптер для підтримки API Google Gemini.
-* **Історія 1.5:** Розширити адаптер для підтримки локального сервера Ollama.
-* **Історія 1.6:** Оновити UI для ручного вибору моделі, показуючи всі налаштовані моделі, згруповані за провайдерами.
+* **Story 1.1:** Create a UI for securely entering and storing API keys for OpenAI, Anthropic, Gemini, and a URL for Ollama.
+* **Story 1.2:** Implement a unified adapter that can send requests to and receive responses from the OpenAI API.
+* **Story 1.3:** Extend the adapter to support the Anthropic API.
+* **Story 1.4:** Extend the adapter to support the Google Gemini API.
+* **Story 1.5:** Extend the adapter to support a local Ollama server.
+* **Story 1.6:** Update the UI for manual model selection to show all configured models, grouped by provider.
 
-### Епік 2: Інтелектуальний рушій маршрутизації v1
+### Epic 2: Intelligent Routing Engine v1
 
-**Мета:** Реалізувати базову логіку автоматичного вибору найкращої моделі з усіх доступних.
+**Goal:** To implement the basic logic for automatically selecting the best model from all available options.
 
-* **Історія 2.1:** Створити конфігураційний файл (матрицю моделей), що описує характеристики кожної моделі (вартість, швидкість, сильні сторони: код, креативність, аналіз).
-* **Історія 2.2:** Реалізувати аналізатор запитів, що визначає намір та складність.
-* **Історія 2.3:** Створити ядро рушія маршрутизації, яке на основі аналізу запиту та матриці моделей обирає найкращий варіант.
-* **Історія 2.4:** Інтегрувати рушій у BMAD, щоб автоматичний режим працював за замовчуванням.
+* **Story 2.1:** Create a configuration file (model matrix) that describes the characteristics of each model (cost, speed, strengths: code, creativity, analysis).
+* **Story 2.2:** Implement a request analyzer that determines intent and complexity.
+* **Story 2.3:** Create the core of the routing engine that, based on the request analysis and the model matrix, selects the best option.
+* **Story 2.4:** Integrate the engine into BMAD so that automatic mode works by default.
 
-### Епік 3: Розширені стратегії та гібридний режим
+### Epic 3: Advanced Strategies and Hybrid Mode
 
-**Мета:** Надати користувачам потужні інструменти для складних завдань та гнучкого керування.
+**Goal:** To provide users with powerful tools for complex tasks and flexible management.
 
-* **Історія 3.1:** Реалізувати підтримку налаштовуваних стратегій ("Економія", "Якість", "Баланс") у рушії маршрутизації.
-* **Історія 3.2:** Реалізувати гібридний режим, що дозволяє обрати одну модель для "Планування" (наприклад, `GPT-4o`) та іншу для "Виконання" (наприклад, `Llama3`).
-* **Історія 3.3:** Реалізувати візуалізацію економії, показуючи користувачу, скільки коштів було заощаджено завдяки інтелектуальній маршрутизації.
+* **Story 3.1:** Implement support for customizable strategies ("Savings," "Quality," "Balanced") in the routing engine.
+* **Story 3.2:** Implement a hybrid mode that allows selecting one model for "Planning" (e.g., `GPT-4o`) and another for "Execution" (e.g., `Llama3`).
+* **Story 3.3:** Implement a savings visualization that shows the user how much money was saved thanks to intelligent routing.

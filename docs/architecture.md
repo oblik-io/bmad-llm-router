@@ -1,107 +1,105 @@
-# Architecture Document: Інтелектуальний маршрутизатор моделей BMAD (v2.2)
+# Architecture Document: BMAD Intelligent Model Router (v2.2)
 
-## 1. Архітектура високого рівня
+## 1. High-Level Architecture
 
-**Основний принцип:** Роутер — це не зовнішній хмарний сервіс, а **основна бібліотека (core library)**, вбудована безпосередньо в інструментарій BMAD-METHOD. Він виконується локально на машині кожного розробника.
+**Core Principle:** The router is not an external cloud service but a **core library** embedded directly into the BMAD-METHOD toolkit. It runs locally on each developer's machine.
 
-### Платформа та інфраструктура
+### Platform and Infrastructure
 
-**Хмарні провайдери не потрібні для роботи самого роутера.**
+**Cloud providers are not required for the router itself to function.**
 
-- **Середовище виконання:** Локальна машина розробника з встановленим Node.js.
-- **Вимоги:** Наявність доступу до мережі Інтернет для звернення до хмарних LLM API.
+- **Execution Environment:** A developer's local machine with Node.js installed.
+- **Requirements:** Internet access is required to call cloud-based LLM APIs.
 
-### Конфігурація для командної роботи
+### Configuration for Teamwork
 
-- **Ядро роутера:** Логіка знаходиться у репозиторії BMAD-METHOD (`.bmad-core/router/`).
-- **Спільна конфігурація:** Файл `.bmad-core/config/router.config.yml` містить "матрицю моделей" та правила; він версіонується в Git для узгодженості роботи команди.
-- **Персональні налаштування:** API-ключі зберігаються в локальному файлі `.env`, який ігнорується Git.
+- **Router Core:** The logic resides in the BMAD-METHOD repository (`.bmad-core/router/`).
+- **Shared Configuration:** The `.bmad-core/config/router.config.yml` file contains the "model matrix" and rules; it is versioned in Git to ensure team consistency.
+- **Personal Settings:** API keys are stored in a local `.env` file, which is ignored by Git.
 
-### Діаграма архітектури
+### Architecture Diagram
 
 ```mermaid
 graph TD
-    subgraph "Локальне середовище розробника"
-        A[Агент BMAD] --> R{Ядро Роутера}
+    subgraph "Developer's Local Environment"
+        A[BMAD Agent] --> R{Router Core}
 
-        subgraph LogicSubGraph [Компоненти реального часу]
-            D[Аналізатор Запитів]
-            Adapters[Адаптери Провайдерів]
-            Cfg[Менеджер Конфігурації]
+        subgraph LogicSubGraph [Real-time Components]
+            D[Request Analyzer]
+            Adapters[Provider Adapters]
+            Cfg[Configuration Manager]
         end
 
-        R -- "Використовує логіку" --> LogicSubGraph
-        R -- "Повідомляє про виклик" --> T[Трекер Використання]
-        T -- "Віддає метрики через /metrics" --> LocalMetricsEP[localhost/metrics]
+        R -- "Uses logic from" --> LogicSubGraph
+        R -- "Reports call to" --> T[Usage Tracker]
+        T -- "Exposes metrics via /metrics" --> LocalMetricsEP[localhost/metrics]
 
-        Adapters -- "Запит до LLM" --> ExtAPI[Зовнішні API]
+        Adapters -- "Request to LLM" --> ExtAPI[External APIs]
     end
 
-    subgraph "Система моніторингу (Docker)"
+    subgraph "Monitoring System (Docker)"
         P[Prometheus]
-        P -- "Scrape (збирає дані)" --> LocalMetricsEP
-        MetricsBot[Клієнт Метрик — analyze] -- "Запит PromQL" --> P
+        P -- "Scrapes data from" --> LocalMetricsEP
+        MetricsBot[Metrics Client — analyze] -- "Sends PromQL query to" --> P
     end
 
-    MetricsBot -- "Звіт" --> U[Користувач]
+    MetricsBot -- "Reports to" --> U[User]
 ```
 
-## 2. Технологічний стек
+## 2. Technology Stack
 
-### Категорія Технологія Версія Призначення Обґрунтування
+### Category Technology Version Purpose Rationale
 
-| Категорія            | Технологія    | Версія          | Призначення                                  | Обґрунтування                                     |
-| -------------------- | ------------- | --------------- | -------------------------------------------- | ------------------------------------------------- |
-| Основна мова         | TypeScript    | ~5.3.3          | Розробка всієї логіки роутера.               | Забезпечує надійність та строгу типізацію.        |
-| Середовище виконання | Node.js       | ^18.0 \|\|^20.0 |                                              |                                                   |
-| Клієнт для API       | Axios         | ^1.6.0          | Виконання HTTP-запитів до API LLM.           | Надійний та популярний HTTP-клієнт.               |
-| Формат конфігурації  | YAML & dotenv | -               | Зберігання спільної конфігурації та ключів.  | YAML читебельний, dotenv — стандарт для секретів. |
-| Тестування           | Jest          | ^29.7.0         | Написання unit- та інтеграційних тестів.     | Потужний фреймворк для тестування.                |
-| Збір метрик          | prom-client   | ^15.1.0         | Створення /metrics ендпоінту для Prometheus. | Стандартна бібліотека для Node.js.                |
-| Система аналітики    | Prometheus    | -               | Централізований збір та обробка метрик.      | Потужне та розширюване рішення.                   |
+| Category | Technology | Version | Purpose | Rationale |
+| :--- | :--- | :--- | :--- | :--- |
+| **Core Language** | TypeScript | ~5.3.3 | Development of all router logic. | Ensures reliability and strong typing. |
+| **Runtime Environment** | Node.js | ^18.0 \|\|^20.0 | | |
+| **API Client** | Axios | ^1.6.0 | Executing HTTP requests to LLM APIs. | A reliable and popular HTTP client. |
+| **Configuration Format** | YAML & dotenv | - | Storing shared configuration and keys. | YAML is readable, dotenv is standard for secrets. |
+| **Testing** | Jest | ^29.7.0 | Writing unit and integration tests. | A powerful framework for testing. |
+| **Metrics Collection** | prom-client | ^15.1.0 | Creating the /metrics endpoint for Prometheus. | The standard library for Node.js. |
+| **Analytics System** | Prometheus | - | Centralized collection and processing of metrics. | A powerful and extensible solution. |
 
-## 3. Компоненти та робочі процеси
+## 3. Components and Workflows
 
-### Компоненти
+### Components
 
-1. Менеджер Конфігурації: Читає router.config.yml та .env.
-2. Ядро Роутера: Приймає запит, керує процесом.
-3. Аналізатор Запитів: Визначає намір та складність запиту.
-4. Адаптери Провайдерів: Модулі для комунікації з кожним LLM API.
-5. Трекер Використання: Оновлює метрики та віддає їх через /metrics.
-6. Клієнт Метрик (MetricsBot): CLI-команда (*analyze), що робить запити до Prometheus API.
+1.  **Configuration Manager:** Reads `router.config.yml` and `.env`.
+2.  **Router Core:** Receives the request and manages the process.
+3.  **Request Analyzer:** Determines the intent and complexity of the request.
+4.  **Provider Adapters:** Modules for communicating with each LLM API.
+5.  **Usage Tracker:** Updates metrics and exposes them via `/metrics`.
+6.  **Metrics Client (MetricsBot):** A CLI command (`analyze`) that queries the Prometheus API.
 
-### Ключовий робочий процес
+### Key Workflow
 
-Діаграма послідовності показує автоматичну маршрутизацію запиту.
-
-Фрагмент коду
+The sequence diagram shows the automatic routing of a request.
 
 ```mermaid
 sequenceDiagram
-    participant A as Агент BMAD
-    participant R as Ядро Роутера
-    participant An as Аналізатор
-    participant Ad as Адаптер
-    participant API as API Провайдера
-    participant T as Трекер Використання
+    participant A as BMAD Agent
+    participant R as Router Core
+    participant An as Analyzer
+    participant Ad as Adapter
+    participant API as Provider API
+    participant T as Usage Tracker
 
-    A->>R: Надіслати запит (prompt)
-    R->>An: Проаналізувати складність
-    An-->>R: Повернути оцінку
-    R->>R: Обрати модель
-    R->>Ad: Виконати запит
-    Ad->>API: Надіслати HTTP-запит
-    API-->>Ad: Повернути відповідь
-    Ad-->>R: Повернути уніфіковану відповідь
-    R-->>A: Повернути фінальну відповідь
-    R->>T: Залогувати виклик
-    T->>T: Оновити метрики для Prometheus
+    A->>R: Send request (prompt)
+    R->>An: Analyze complexity
+    An-->>R: Return evaluation
+    R->>R: Select model
+    R->>Ad: Execute request
+    Ad->>API: Send HTTP request
+    API-->>Ad: Return response
+    Ad-->>R: Return unified response
+    R-->>A: Return final response
+    R->>T: Log the call
+    T->>T: Update metrics for Prometheus
 ```
 
-## 4. Структура коду та стандарти
+## 4. Code Structure and Standards
 
-### Структура коду
+### Code Structure
 
 ```Plaintext
 .bmad-core/
@@ -117,14 +115,14 @@ sequenceDiagram
     └── package.json
 ```
 
-Критичні правила кодування
+### Critical Coding Rules
 
-1. Доступ до налаштувань — тільки через Менеджер Конфігурації.
-2. Взаємодія з LLM API — тільки через Адаптери.
-3. Заборонено зберігати API-ключі в коді.
-4. Кожен виклик має бути залогований через Трекер Використання.
+1.  Access to settings is only through the Configuration Manager.
+2.  Interaction with LLM APIs is only through Adapters.
+3.  Storing API keys in the code is forbidden.
+4.  Every call must be logged via the Usage Tracker.
 
-## 5. Інфраструктура та тестування
+## 5. Infrastructure and Testing
 
-- Інфраструктура: Локальний стек моніторингу (Prometheus/Grafana) на базі Docker.
-- Тестування: Unit-тести для кожного компонента та інтеграційні тести для перевірки взаємодії. AI-агент зобов'язаний створювати тести для нового коду.
+-   **Infrastructure:** Local monitoring stack (Prometheus/Grafana) based on Docker.
+-   **Testing:** Unit tests for each component and integration tests to verify interactions. The AI agent is required to create tests for new code.
